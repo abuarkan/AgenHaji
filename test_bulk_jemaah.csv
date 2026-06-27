@@ -1,0 +1,3 @@
+nik;name;address;phone_number;email;registration_type;bps_bpih;claim_status;porsi_number;location_lat;location_lng
+3171012345670999;Ahmad Valid;Jl. Kebon Jeruk No. 12;08123456789;ahmad_valid@example.com;Reguler;Bank Syariah Indonesia;Disetujui;1234567890;-6.20880000;106.84560000
+123;Jemaah Invalid;Jl. Mawar No. 45;08139876543;siti_invalid@example.com;Khusus;Bank Muamalat Indonesia;Disetujui;1234567891;-6.91750000;107.61910000

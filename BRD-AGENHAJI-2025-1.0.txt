@@ -1,0 +1,521 @@
+--- PAGE 1 ---
+  
+AGEN HAJI 
+ 
+Nomor Dokumen: 
+BRD-AGENHAJI-
+2025 
+ 
+Hal i 
+Business Requirement Document (BRD) Versi : 1.0 
+Tanggal :  29-04-2025 
+ 
+BRD Template version: 1.1  i 
+ 
+ 
+ 
+ 
+BUSINESS REQUIREMENT 
+DOCUMENT 
+ 
+Agen Haji 
+ 
+Nomor BRD-AGENHAJI-2025 
+Tanggal 29-04-2025 
+Versi 1.0 
+Klasifikasi Rahasia / Terbatas / Publik 
+Unit Pengusul 1. Divisi Pengembangan Bisnis Digital Haji 
+2. Divisi Pengelolaan Kepesertaan Haji 
+Unit Terkait - 
+Unit Sponsor Divisi Pengembangan Teknologi Informasi 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+--- PAGE 2 ---
+  
+AGEN HAJI 
+ 
+Nomor Dokumen: 
+BRD-AGENHAJI-
+2025 
+ 
+Hal ii 
+Business Requirement Document (BRD) Versi : 1.0 
+Tanggal :  29-04-2025 
+ 
+BRD Template version: 1.1  ii 
+ 
+Informasi Perubahan Dokumen 
+Versi Tanggal Alasan Perubahan Disiapkan Oleh 
+1.0 02-06-2025 Terbitan awal  
+ 
+Informasi Persetujuan Dokumen 
+Tanda Tangan Penyusun 
+Disusun oleh: Jabatan: Tanggal: Tanda Tangan: 
+Batistuta Dewa 
+Ramadhani 
+Asisten Manajer 
+Pengembangan Bisnis 
+Penghimpunan Haji 
+2 Juni 2025  
+ 
+ 
+ 
+ 
+Tanda Tangan Reviewer  
+Direview oleh: Jabatan: Tanggal: Tanda Tangan: 
+Muhammad Labib Kepala Divisi 
+Pengembangan Bisnis 
+Digital Haji 
+2 Juni 2025  
+ 
+ 
+ 
+ 
+Tanda Tangan Persetujuan 
+Disetujui oleh: Jabatan: Tanggal: Tanda Tangan: 
+Juni Supriyanto Deputi Penghimpunan 2 Juni 2025  
+ 
+ 
+ 
+ 
+ 
+ 
+  
+
+
+--- PAGE 3 ---
+  
+AGEN HAJI 
+ 
+Nomor Dokumen: 
+BRD-AGENHAJI-
+2025 
+ 
+Hal iii 
+Business Requirement Document (BRD) Versi : 1.0 
+Tanggal :  29-04-2025 
+ 
+BRD Template version: 1.1  iii 
+ 
+Istilah, Akronim, dan Singkatan 
+No. Istilah / Akronim / 
+Singkatan Definisi / Kepanjangan 
+1. B2B Business-to-Business 
+2. SMART Specific, Measurable, Achievable, Relevant, Time-specific 
+3. MVP Minimum Viable Product 
+4. CRM Customer Relationship Management 
+5. Mode Superadmin Mode yang menyediakan visibilitas penuh atas kinerja seluruh 
+agen dan data seluruh calon jemaah. 
+6. Mode Agen Haji Mode yang dapat mendaftarkan calon Jemaah Reguler/Khusus, 
+dilengkapi dashboard pemantau, leveling, dan estimasi insentif. 
+7. Agen Haji Freelance Agen Haji yang mendaftar tanpa mewakili institusi apapun. 
+8. Agen Haji Institusi Agen Haji yang mendaftar sebagai perwakilan dari institusi 
+(rekanan BPKH) 
+ 
+ 
+
+--- PAGE 4 ---
+  
+AGEN HAJI 
+ 
+Nomor Dokumen: 
+BRD-AGENHAJI-
+2025 
+ 
+Hal iv 
+Business Requirement Document (BRD) Versi : 1.0 
+Tanggal :  29-04-2025 
+ 
+BRD Template version: 1.1  iv 
+ 
+Daftar Isi 
+Informasi Perubahan Dokumen .............................................................................................................. ii 
+Informasi Persetujuan Dokumen ............................................................................................................ ii 
+Istilah, Akronim, dan Singkatan ............................................................................................................. iii 
+Daftar Isi ................................................................................................................................................. iv 
+I. Ringkasan Eksekutif .............................................................................................................................. 1 
+II. Latar Belakang ..................................................................................................................................... 2 
+III. Tujuan Sistem ..................................................................................................................................... 2 
+IV. Gambaran Proses Bisnis ..................................................................................................................... 4 
+IV.1. Proses Bisnis Saat Ini (As-Is) ......................................................... Error! Bookmark not defined. 
+IV.2. Proses Bisnis yang Diusulkan (To-Be)........................................... Error! Bookmark not defined. 
+V. Pemangku Kepentingan Utama (Key stakeholders) ............................................................................ 9 
+VI. Kendala/Batasan Sistem (System constraints)................................................................................... 9 
+VII. Total Cost of Ownership ................................................................................................................... 9 
+IX. Referensi .......................................................................................................................................... 10 
+ 
+ 
+ 
+ 
+
+--- PAGE 5 ---
+  
+AGEN HAJI 
+ 
+Nomor Dokumen: 
+BRD-AGENHAJI-
+2025 
+ 
+Hal 1 
+Business Requirement Document (BRD) Versi : 1.0 
+Tanggal :  29-04-2025 
+ 
+BRD Template version: 1.1  1 
+ 
+I. Ringkasan Eksekutif 
+Webpage Agen Haji dikembangkan sebagai solusi strategis BPKH dalam menjawab 
+tantangan stagnasi pendaftar haji baru dan meningkatnya angka pembatalan 
+pendaftaran. Inisiatif ini berfungsi sebagai kanal digital alternatif berbasis model 
+Business-to-Business (B2B) , yang memungkinkan layanan dan produk BPKH 
+didistribusikan melalui peran aktif Agen Haji—baik individu maupun institusi. 
+• BPKH mengembangkan Webpage Agen Haji untuk memperluas jangkauan 
+pendaftaran haji secara digital melalui agen, dengan tetap memperhatikan 
+kebutuhan calon jemaah yang memiliki keterbatasan akses terhadap BPKH Apps, 
+seperti keterbatasan internet, literasi teknologi, dan hambatan geografis. 
+• Platform ini menyediakan dua jenis akun: Agen Haji Biasa, yang memungkinkan 
+agen melakukan pendaftaran dan pengelolaan jemaah secara langsung  dalam 
+bentuk Agen Institusi atau Agen Freelance; dan Super-admin, yang 
+memungkinkan internal BPKH memantau dan mengelola seluruh data agen dan 
+jemaah secara nasional. 
+• Hingga triwulan II 2025, Webpage Agen Haji masih dalam tahap pengembangan 
+sisi front-end sebesar 67%, yang akan mencakup beberapa fitur utama seperti 
+pendaftaran agen, pengelolaan jemaah (individu dan bulk), dashboard performa 
+agen, leveling dan insentif agen, kode referral agen, serta pengelolaan akun dan 
+institusi oleh superadmin. 
+BPKH telah menyiapkan rencana penguatan aktivasi dan kapabilitas platform untuk 
+mendukung target strategis pertumbuhan pendaftaran haji baru. 
+• Rencana ini mencakup pengembangan validasi data otomatis, pelacakan status 
+pendaftaran jemaah secara real -time, dan integrasi sistem dengan fitur 
+pelunasan serta jadwal keberangkatan. 
+• Kolaborasi lintas lembaga antara BPKH, Kementerian Agama, BPS -BPIH, serta 
+para agen haji akan diperkuat untuk memastikan tata kelola sistem yang 
+terintegrasi, sesuai regulasi, dan akuntabel. 
+Implementasi menyeluruh Webpage Agen Haji akan mempercepat pencapaian tujuan 
+strategis BPKH dalam perluasan kanal distribusi layanan, mendorong pertumbuhan 
+pendaftar calon jemaah haji baru  secara organik, serta memperkuat posisi BPKH dalam 
+ekosistem digital haji nasional yang inklusif dan berkelanjutan. 
+ 
+
+--- PAGE 6 ---
+  
+AGEN HAJI 
+ 
+Nomor Dokumen: 
+BRD-AGENHAJI-
+2025 
+ 
+Hal 2 
+Business Requirement Document (BRD) Versi : 1.0 
+Tanggal :  29-04-2025 
+ 
+BRD Template version: 1.1  2 
+ 
+II. Latar Belakang 
+Webpage Agen Haji merupakan inisiatif BPKH untuk mendukung peningkatan 
+pendaftaran haji di tengah tantangan, seperti stagnasi pertumbuhan pendaftar haji baru 
+dan meningkatnya angka pembatalan pendaftaran. Berbeda dari BPKH Apps, Webpage 
+Agen Haji menggunakan model bisnis Business -to-Business (B2B), di mana produk atau 
+layanan BPKH disalurkan melalui Agen Haji kepada customer. Adapun dua mode akun 
+untuk mengakses webpage agen haji yaitu akun admin biasa dan juga superadmin. Admin 
+biasa atau agen haji yang mendaftar di webpage agen haji, dapat mengelola jemaahnya 
+seperti menambah/mendata jemaah dan juga memantau dashboard yang berisi 
+infografis kinerjanya. Akun superadmin memiliki akses penuh untuk memantau kinerja 
+seluruh agen, melihat detail profil masing -masing agen, serta mengelola data seluruh 
+jemaah yang terdaftar melalui agen haji. 
+ 
+Dashboard BPKH Agen Haji dan BPKH Superadmin 
+Webpage ini bertujuan agar produk dan layanan BPKH dapat tetap diakses oleh 
+customer yang menghadapi keterbatasan akses terhadap BPKH Apps, seperti 
+keterbatasan akses internet, keterbatasan kemampuan teknologi, dan faktor 
+lainnya. Dengan pendekatan ini, layanan BPKH diharapkan dapat menjangkau lebih 
+banyak customer secara luas dan massal. 
+III. Tujuan Sistem 
+Untuk memberikan pemahaman yang jelas dan terarah mengenai tujuan 
+pengembangan Webpage agen haji, pendekatan perumusan tujuan menggunakan 
+
+
+--- PAGE 7 ---
+  
+AGEN HAJI 
+ 
+Nomor Dokumen: 
+BRD-AGENHAJI-
+2025 
+ 
+Hal 3 
+Business Requirement Document (BRD) Versi : 1.0 
+Tanggal :  29-04-2025 
+ 
+BRD Template version: 1.1  3 
+ 
+kerangka SMART (Specific, Measurable, Achievable, Relevant, Time -specific) dapat 
+digunakan. 
+1. Menurunkan biaya dengan digitalisasi layanan haji melalui Webpage Agen Haji yang 
+memungkinkan agen haji melakukan pendaftaran, pendataan, dan pemantauan 
+jemaah tanpa perlu interaksi fisik langsung. Hal ini mengurangi biaya operasional, 
+meminimalkan kebutuhan infrastruktur konvensional, serta menekan pengeluaran 
+yang timbul dari proses manual dan duplikasi antar lembaga. 
+2. Efisiensi waktu, dengan adanya Webpage mempercepat proses administrasi jemaah 
+oleh agen, seperti pendaftaran, verifikasi dokumen, dan pemantauan status porsi. 
+Agen juga dapat mengakses dan mengelola data  secara instan melalui dashboard 
+berbasis real-time, tanpa perlu datang langsung ke kantor layanan haji. 
+3. Meningkatkan kualitas,  dengan dukungan fitur -fitur seperti penambahan jemaah 
+secara bulk, level insentif, pemantauan kinerja agen, serta sistem referral yang 
+transparan. Hal ini memberikan kenyamanan bagi agen dalam mengelola jemaah dan 
+memastikan bahwa layanan yang diberikan lebih akurat, terstruktur, dan mudah 
+dijangkau. Berikut ini adalah uraian tujuan pengembangan BPKH Apps berdasarkan 
+pendekatan SMART: 
+S Meningkatkan efektivitas agen haji  dalam memperluas jangkauan layanan 
+pendaftaran haji dengan menyediakan akses digital melalui Webpage Agen Haji, 
+sehingga mempermudah masyarakat, terutama yang belum terbiasa dengan 
+teknologi tinggi, untuk memperoleh informasi dan mendaftar secara efisien. 
+M Menargetkan 397 ribu pendaftar haji baru melalui saluran agen haji dalam 2 tahun, 
+dengan 397 ribu  agen aktif (freelance & institusi), serta peningkatan performa 
+melalui metrik yang terukur seperti jumlah jemaah, aktivitas dashboard, dan nilai 
+insentif berbasis level keagenan (Silver, Gold, Platinum, Diamond). 
+A Pengembangan dan peluncuran Webpage Agen Haji dilakukan secara bertahap  
+melalui pendekatan MVP (Minimum Viable Product), dengan dukungan sistem 
+pendaftaran jemaah individu/bulk, integrasi insentif dan referral, serta pembinaan 
+agen melalui pelatihan dan pengawasan superadmin. 
+R Selaras dengan misi BPKH untuk meningkatkan inklusi layanan keuangan haji secara 
+digital, menjawab tantangan stagnasi pendaftar baru, serta mengoptimalkan 
+kontribusi agen haji sebagai mitra strategis dalam mendorong pertumbuhan 
+ekosistem haji berbasis teknologi. 
+T Implementasi dan peluncuran tahap awal berupa landing page telah dilakukan sejak 
+2024, lalu dilanjutkan pengembangan fitur utama (pendaftaran jemaah, dashboard 
+kinerja, insentif, dan kelola akses) yang mulai dikembangkan 2025, termasuk 
+integrasi dengan sistem layanan digital Kementerian Agama dan pelaporan berkala 
+performa agen. 
+ 
+
+--- PAGE 8 ---
+  
+AGEN HAJI 
+ 
+Nomor Dokumen: 
+BRD-AGENHAJI-
+2025 
+ 
+Hal 4 
+Business Requirement Document (BRD) Versi : 1.0 
+Tanggal :  29-04-2025 
+ 
+BRD Template version: 1.1  4 
+ 
+IV. Gambaran Proses Bisnis 
+1. Integrasi dengan BPKH Apps (Kode Referral) untuk Data Insentif Agen Haji 
+ 
+Melalui fitur ini, para agen haji dapat meningkatkan insentif mereka dengan 
+mengarahkan para jemaah kelolaannya untuk memasukkan kode referral agen hajinya 
+di saat para jemaah kelolaannya melakukan pendaftaran haji. Kode referral ini akan 
+ditampilkan pada dashboard agen haji yang nantinya dapat disalin  dan diberikan untuk 
+para jemaah kelolaannya agar dapat diinput di saat menghubungkan nomor porsi haji 
+di BPKH Apps untuk menambah poin insentif kelolaan jemaahnya dan meningkatkan 
+leveling insentif agen haji.  
+ 
+Untuk leveling agen haji sendiri dibedakan menjadi 4 tingkat yaitu (Silver, Gold, 
+Platinum, Diamond) dengan ketentuan agen silver mengelola sebanyak 20 jemaah dan 
+menerima Rp50.000 per jemaah. Selanjutnya, untuk agen gold menerima sebesar 
+Rp75.000 per jema ah dengan target kelolaan jemaah sebanyak 26 orang. Kemudian 
+untuk agen platinum akan tercapai ketika agen sudah mengelola sebanyak 31 jemaah 
+dan mendapatkan insentif per jemaah sebesar Rp100.000. Terakhir, untuk agen 
+diamond akan menerima insentif per jem aah sebesar Rp125.000 dan akan tercapai 
+ketika agen haji sudah mengelola 51 jemaah haji.  Fitur Webpage Agen Haji ditujukan 
+bagi agen haji freelance maupun institusi yang aktif merekrut jemaah dan ingin 
+memperoleh insentif berbasis kinerja. Fitur ini mempermudah pelacakan kontribusi 
+agen, menciptakan sistem insentif yang transparan, serta menin gkatkan akurasi data 
+afiliasi. 
+2. Customer Relationship Management (CRM) 
+
+
+--- PAGE 9 ---
+  
+AGEN HAJI 
+ 
+Nomor Dokumen: 
+BRD-AGENHAJI-
+2025 
+ 
+Hal 5 
+Business Requirement Document (BRD) Versi : 1.0 
+Tanggal :  29-04-2025 
+ 
+BRD Template version: 1.1  5 
+ 
+Agen haji melakukan pengelolaan hubungan dengan calon jamaah haji yang telah 
+didaftarkannya melalui aplikasi. 
+ 
+Fitur Customer Relationship Management (CRM) memungkinkan agen haji freelance 
+ataupun institusi untuk menambahkan jemaah secara individu melalui formulir isian atau 
+secara bulk dengan unggahan file Excel (xlsx/xls). Agen dapat menginput data lengkap 
+seperti nama, KTP, alamat, titik lokasi, foto , email, nomor handphone, tipe pendaftaran 
+(Reguler/Khusus), dan memilih bank penyalur. Seluruh data jemaah ditampilkan dalam 
+tabel interaktif dengan filter status, pencarian nama/email, serta status verifikasi porsi,  
+yang dapat diedit atau dihapus sesuai kebutuhan. Fitur ini juga dapat diakses oleh 
+Superadmin BPKH untuk pengelolaan terpadu dan pemantauan akurat.  Berikut 
+merupakan tampilan dari masing masing fitur yang akan dikembangkan :  
+1. Kelola Jemaah Haji 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+--- PAGE 10 ---
+  
+AGEN HAJI 
+ 
+Nomor Dokumen: 
+BRD-AGENHAJI-
+2025 
+ 
+Hal 6 
+Business Requirement Document (BRD) Versi : 1.0 
+Tanggal :  29-04-2025 
+ 
+BRD Template version: 1.1  6 
+ 
+2. Ubah Informasi 
+ 
+3. Tambah Jemaah Individu 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+--- PAGE 11 ---
+  
+AGEN HAJI 
+ 
+Nomor Dokumen: 
+BRD-AGENHAJI-
+2025 
+ 
+Hal 7 
+Business Requirement Document (BRD) Versi : 1.0 
+Tanggal :  29-04-2025 
+ 
+BRD Template version: 1.1  7 
+ 
+  
+
+
+--- PAGE 12 ---
+  
+AGEN HAJI 
+ 
+Nomor Dokumen: 
+BRD-AGENHAJI-
+2025 
+ 
+Hal 8 
+Business Requirement Document (BRD) Versi : 1.0 
+Tanggal :  29-04-2025 
+ 
+BRD Template version: 1.1  8 
+ 
+4. Tambah Jemaah Bulk 
+ 
+  
+
+
+--- PAGE 13 ---
+  
+AGEN HAJI 
+ 
+Nomor Dokumen: 
+BRD-AGENHAJI-
+2025 
+ 
+Hal 9 
+Business Requirement Document (BRD) Versi : 1.0 
+Tanggal :  29-04-2025 
+ 
+BRD Template version: 1.1  9 
+ 
+V. Pemangku Kepentingan Utama (Key stakeholders) 
+No. Stakehoder Peran / Tanggung Jawab 
+1 Pengelola Kepesertaan Haji Pengguna dan Pengelola Informasi 
+2 Bisnis Digital Haji  Pengguna dan Pengelola Informasi  
+3 Strategi TI  Pengguna/Pengelola system dan Informasi  
+4 Operasional TI  Pengguna/Pengelola system dan Informasi  
+5 Agen Haji Pengunjung 
+VI. Kendala/Batasan Sistem (System constraints) 
+Kendala / Batasan Deskripsi 
+Risiko sistem Risiko serangan siber terhadap sistem front -end dan back -end 
+website; risiko server down atau overload saat periode 
+pendaftaran haji meningkat tajam. 
+Ketersediaan tim Keterbatasan personel teknis yang menangani pengembangan 
+dan pemeliharaan sistem, terutama pada masa kritis menjelang 
+musim haji atau saat update fitur. 
+Sumber daya Keterbatasan anggaran untuk pengembangan fitur baru, 
+pengujian keamanan berkala, dan peningkatan kapasitas server 
+untuk mendukung trafik tinggi. 
+Ketergantungan 
+sistem 
+- 
+Tenggat waktu 
+(deadlines) 
+Tekanan waktu dalam menyelesaikan pengembangan atau 
+update sebelum dibukanya musim pendaftaran atau pelunasan 
+haji; perubahan regulasi juga berdampak. 
+VII. Total Cost of Ownership 
+Komponen Biaya Estimasi Biaya (Rp per 
+Tahun) 
+Pemerolehan Sistem/Aplikasi  200.000.000,00 
+Estimasi Total Cost of Ownership (TCO) 200.000.000,00 
+ 
+
+--- PAGE 14 ---
+  
+AGEN HAJI 
+ 
+Nomor Dokumen: 
+BRD-AGENHAJI-
+2025 
+ 
+Hal 10 
+Business Requirement Document (BRD) Versi : 1.0 
+Tanggal :  29-04-2025 
+ 
+BRD Template version: 1.1  10 
+ 
+VIII. Referensi 
+No. Nomor Dokumen Judul Dokumen 
+1 421/BPKH.00/12/2023 Renstra BPKH 2022-2027 
+2   
+3   
+4   
+5   
+ 
+
