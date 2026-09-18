@@ -1,1 +1,1 @@
-//
+// Frontend entry for Vite.
