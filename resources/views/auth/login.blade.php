@@ -107,41 +107,7 @@
             </div>
         </div>
 
-        <!-- Quick Login Helper Card -->
-        <div class="mt-4 bg-white border border-slate-200 rounded-xl p-4 shadow-lg text-xs text-slate-650">
-            <span class="block font-bold text-slate-400 mb-2.5 text-[9px] uppercase tracking-wider">Pilih Akun Demo
-                (Klik untuk Isi):</span>
-            <div class="grid grid-cols-4 gap-2">
-                <button type="button" onclick="quickFill('superadmin@bpkh.go.id', 'password123')"
-                    class="flex flex-col items-center p-2 rounded-lg bg-slate-50 hover:bg-bpkh-navy/5 border border-slate-200 hover:border-bpkh-navy/20 text-center transition-all cursor-pointer group">
-                    <span
-                        class="block font-extrabold text-[9px] text-slate-700 group-hover:text-bpkh-navy">Superadmin</span>
-                    <span class="text-slate-400 text-[8px] mt-0.5">BPKH Admin</span>
-                </button>
 
-                <button type="button" onclick="quickFill('admin.haji@bpkh.go.id', 'password123')"
-                    class="flex flex-col items-center p-2 rounded-lg bg-slate-50 hover:bg-bpkh-navy/5 border border-slate-200 hover:border-bpkh-navy/20 text-center transition-all cursor-pointer group">
-                    <span
-                        class="block font-extrabold text-[9px] text-slate-700 group-hover:text-bpkh-navy text-center leading-none">Admin
-                        Haji</span>
-                    <span class="text-slate-400 text-[8px] mt-0.5">Ops Admin</span>
-                </button>
-
-                <button type="button" onclick="quickFill('kbiu@travel.com', 'password123')"
-                    class="flex flex-col items-center p-2 rounded-lg bg-slate-50 hover:bg-bpkh-navy/5 border border-slate-200 hover:border-bpkh-navy/20 text-center transition-all cursor-pointer group">
-                    <span
-                        class="block font-extrabold text-[9px] text-slate-700 group-hover:text-bpkh-navy">Institusi</span>
-                    <span class="text-slate-400 text-[8px] mt-0.5">KBIU Travel</span>
-                </button>
-
-                <button type="button" onclick="quickFill('ahmad@gmail.com', 'password123')"
-                    class="flex flex-col items-center p-2 rounded-lg bg-slate-50 hover:bg-bpkh-navy/5 border border-slate-200 hover:border-bpkh-navy/20 text-center transition-all cursor-pointer group">
-                    <span
-                        class="block font-extrabold text-[9px] text-slate-700 group-hover:text-bpkh-navy">Freelance</span>
-                    <span class="text-slate-400 text-[8px] mt-0.5">Ahmad Agent</span>
-                </button>
-            </div>
-        </div>
     </div>
 
     <!-- Copyright Footer from Mockup -->
@@ -150,13 +116,6 @@
     </div>
 
     <script>
-        function quickFill(email, password) {
-            document.getElementById('email').value = email;
-            document.getElementById('password').value = password;
-            const form = document.getElementById('loginForm');
-            form.classList.add('scale-[1.01]');
-            setTimeout(() => form.classList.remove('scale-[1.01]'), 150);
-        }
 
         function togglePasswordVisibility() {
             const passwordInput = document.getElementById('password');

@@ -125,6 +125,13 @@ class AgentSystemTest extends TestCase
      */
     public function test_agent_promotion_and_commission_ledger(): void
     {
+        \App\Models\ReferralProgram::create([
+            'name' => 'Program Referral Active',
+            'start_date' => now()->subDays(1)->format('Y-m-d'),
+            'end_date' => now()->addDays(30)->format('Y-m-d'),
+            'is_active' => true,
+        ]);
+
         $agent = Agent::where('referral_code', 'ALRM2002')->first();
         $silverLevel = AgentLevel::where('name', 'Silver')->first();
         $goldLevel = AgentLevel::where('name', 'Gold')->first();
@@ -294,11 +301,18 @@ class AgentSystemTest extends TestCase
             'cabang_bank' => 'KCP Fatmawati',
             'nomor_rekening' => '1234567890',
             'nomor_npwp' => '123456789012345',
+            'foto_ktp' => \Illuminate\Http\UploadedFile::fake()->image('ktp.png'),
+            'foto_bangunan' => \Illuminate\Http\UploadedFile::fake()->image('bangunan.png'),
+            'foto_diri' => \Illuminate\Http\UploadedFile::fake()->image('diri.png'),
+            'foto_pakta_integritas' => \Illuminate\Http\UploadedFile::fake()->image('pakta.png'),
+            'foto_buku_tabungan' => \Illuminate\Http\UploadedFile::fake()->image('tabungan.png'),
+            'foto_npwp' => \Illuminate\Http\UploadedFile::fake()->image('npwp.png'),
         ]);
 
-        $response->assertRedirect(route('agent.verification.wizard'));
+        $response->assertRedirect(route('dashboard'));
         $agent->refresh();
         $this->assertTrue((bool) $agent->is_submitted);
+        $this->assertEquals('1990-01-01', $agent->birth_date);
 
         // 4. Act as Admin Haji and approve the agent
         $adminHaji = User::where('role', 'admin_haji')->first();
@@ -306,7 +320,7 @@ class AgentSystemTest extends TestCase
             'status' => 'active'
         ]);
 
-        $response->assertRedirect(route('superadmin.index'));
+        $response->assertRedirect(route('admin-haji.index'));
         $agent->refresh();
 
         $this->assertEquals('active', $agent->status);
@@ -368,5 +382,197 @@ class AgentSystemTest extends TestCase
         $response = $this->actingAs($superadmin)->post("/superadmin/users/{$newUser->id}/delete");
         $response->assertRedirect(route('superadmin.index'));
         $this->assertDatabaseMissing('users', ['id' => $newUser->id]);
+    }
+
+    /**
+     * Test the wizard rejects large or invalid files.
+     */
+    public function test_wizard_rejects_large_or_invalid_files(): void
+    {
+        $user = User::create([
+            'name' => 'Agent File Test',
+            'email' => 'filetest@bpkh.go.id',
+            'password' => bcrypt('password123'),
+            'role' => 'agent'
+        ]);
+        
+        $level = AgentLevel::first() ?? AgentLevel::create(['name' => 'Bronze', 'target_prospects' => 0, 'commission_per_prospect' => 50000]);
+
+        $agent = Agent::create([
+            'user_id' => $user->id,
+            'agent_level_id' => $level->id,
+            'referral_code' => 'FILE-REF',
+            'nik' => '3201011234560099',
+            'whatsapp_number' => '6287777777099',
+            'type' => 'freelance',
+            'status' => 'pending',
+            'is_email_verified' => true,
+            'is_whatsapp_verified' => true,
+            'is_ktp_verified' => false
+        ]);
+
+        // Attempt submission with file size exceeding 3MB limit (e.g. 4MB = 4096KB)
+        $response = $this->actingAs($user)->post('/agent/verification-wizard', [
+            'nama_lengkap' => 'File Test Lengkap',
+            'jenis_kelamin' => 'Pria',
+            'tempat_lahir' => 'Jakarta',
+            'tanggal_lahir' => '1990-01-01',
+            'alamat_ktp' => 'Jl. KTP No. 1',
+            'provinsi_ktp' => 'DKI Jakarta',
+            'kota_ktp' => 'Jakarta Selatan',
+            'kecamatan_ktp' => 'Kebayoran Baru',
+            'kelurahan_ktp' => 'Senayan',
+            'alamat_tinggal' => 'Jl. Domisili No. 2',
+            'provinsi_tinggal' => 'DKI Jakarta',
+            'kota_tinggal' => 'Jakarta Selatan',
+            'kecamatan_tinggal' => 'Kebayoran Baru',
+            'kelurahan_tinggal' => 'Senayan',
+            'nama_bank' => 'Bank Syariah Indonesia',
+            'cabang_bank' => 'KCP Fatmawati',
+            'nomor_rekening' => '1234567890',
+            'nomor_npwp' => '123456789012345',
+            'foto_ktp' => \Illuminate\Http\UploadedFile::fake()->create('ktp.png', 4096), // 4MB
+        ]);
+
+        $response->assertSessionHasErrors('foto_ktp');
+    }
+
+    /**
+     * Test that a submitted pending agent can access the dashboard with a warning notice
+     * and is prevented from registering new pilgrim prospects.
+     */
+    public function test_submitted_agent_can_view_dashboard_with_warning_and_cannot_register_pilgrim(): void
+    {
+        $user = User::create([
+            'name' => 'Agent Pending Test',
+            'email' => 'pendingtest@bpkh.go.id',
+            'password' => bcrypt('password123'),
+            'role' => 'agent'
+        ]);
+
+        $level = AgentLevel::first() ?? AgentLevel::create(['name' => 'Bronze', 'target_prospects' => 0, 'commission_per_prospect' => 50000]);
+
+        $agent = Agent::create([
+            'user_id' => $user->id,
+            'agent_level_id' => $level->id,
+            'referral_code' => 'PENDING-REF',
+            'nik' => '3201011234560091',
+            'whatsapp_number' => '6287777777091',
+            'type' => 'freelance',
+            'status' => 'pending',
+            'is_email_verified' => true,
+            'is_whatsapp_verified' => true,
+            'is_ktp_verified' => false,
+            'is_submitted' => true,
+        ]);
+
+        // 1. Can view freelance dashboard (should load with 200, no redirect to wizard)
+        $response = $this->actingAs($user)->get('/agent/freelance');
+        $response->assertStatus(200);
+        $response->assertSee('Akun Menunggu Verifikasi');
+
+        // 2. Cannot register new prospects (should be blocked and return back with error)
+        $response = $this->actingAs($user)->post('/agent/prospects', [
+            'name' => 'Calon Jemaah Baru',
+            'nik' => '3201011234567777',
+            'phone_number' => '081234567890',
+            'email' => 'jemaah@mail.com',
+            'address' => 'Jl. Jemaah No. 1',
+            'registration_type' => 'Reguler',
+            'status_pendaftaran' => 'Pendaftar Haji',
+        ]);
+        
+        $response->assertSessionHas('error');
+        $this->assertDatabaseMissing('prospect_jemaahs', ['name' => 'Calon Jemaah Baru']);
+    }
+
+    /**
+     * Test that Admin Haji can reject agent verification with reason,
+     * and agent is forced to resubmit through wizard with rejection notice displayed.
+     */
+    public function test_admin_haji_can_reject_agent_and_agent_can_resubmit(): void
+    {
+        $user = User::create([
+            'name' => 'Agent Reject Test',
+            'email' => 'rejecttest@bpkh.go.id',
+            'password' => bcrypt('password123'),
+            'role' => 'agent'
+        ]);
+
+        $level = AgentLevel::first() ?? AgentLevel::create(['name' => 'Bronze', 'target_prospects' => 0, 'commission_per_prospect' => 50000]);
+
+        $agent = Agent::create([
+            'user_id' => $user->id,
+            'agent_level_id' => $level->id,
+            'referral_code' => 'REJECT-REF',
+            'nik' => '3201011234560092',
+            'whatsapp_number' => '6287777777092',
+            'type' => 'freelance',
+            'status' => 'pending',
+            'is_email_verified' => true,
+            'is_whatsapp_verified' => true,
+            'is_ktp_verified' => false,
+            'is_submitted' => true,
+        ]);
+
+        $adminHaji = User::create([
+            'name' => 'Admin Haji Reject',
+            'email' => 'adminhajireject@bpkh.go.id',
+            'password' => bcrypt('password123'),
+            'role' => 'admin_haji'
+        ]);
+
+        // 1. Admin Haji rejects agent verification
+        $response = $this->actingAs($adminHaji)->post("/superadmin/agents/{$agent->id}/reject", [
+            'rejection_reason' => 'Foto NPWP buram, mohon diunggah kembali'
+        ]);
+
+        $response->assertRedirect(route('admin-haji.index'));
+        $agent->refresh();
+        $this->assertEquals('pending', $agent->status);
+        $this->assertFalse((bool) $agent->is_submitted);
+        $this->assertEquals('Foto NPWP buram, mohon diunggah kembali', $agent->rejection_reason);
+
+        // 2. Agent tries to access freelance dashboard -> redirected to wizard
+        $response = $this->actingAs($user)->get('/agent/freelance');
+        $response->assertRedirect(route('agent.verification.wizard'));
+
+        // 3. Agent visits wizard -> sees rejection reason
+        $response = $this->actingAs($user)->get(route('agent.verification.wizard'));
+        $response->assertStatus(200);
+        $response->assertSee('Foto NPWP buram, mohon diunggah kembali');
+
+        // 4. Agent resubmits wizard
+        $response = $this->actingAs($user)->post('/agent/verification-wizard', [
+            'nama_lengkap' => 'Agent Reject Test',
+            'jenis_kelamin' => 'Pria',
+            'tempat_lahir' => 'Jakarta',
+            'tanggal_lahir' => '1990-01-01',
+            'alamat_ktp' => 'Jl. KTP No. 1',
+            'provinsi_ktp' => 'DKI Jakarta',
+            'kota_ktp' => 'Jakarta Selatan',
+            'kecamatan_ktp' => 'Kebayoran Baru',
+            'kelurahan_ktp' => 'Senayan',
+            'alamat_tinggal' => 'Jl. Domisili No. 2',
+            'provinsi_tinggal' => 'DKI Jakarta',
+            'kota_tinggal' => 'Jakarta Selatan',
+            'kecamatan_tinggal' => 'Kebayoran Baru',
+            'kelurahan_tinggal' => 'Senayan',
+            'nama_bank' => 'Bank Syariah Indonesia',
+            'cabang_bank' => 'KCP Fatmawati',
+            'nomor_rekening' => '1234567890',
+            'nomor_npwp' => '123456789012345',
+            'foto_ktp' => \Illuminate\Http\UploadedFile::fake()->image('ktp.png'),
+            'foto_bangunan' => \Illuminate\Http\UploadedFile::fake()->image('bangunan.webp'),
+            'foto_diri' => \Illuminate\Http\UploadedFile::fake()->image('diri.png'),
+            'foto_pakta_integritas' => \Illuminate\Http\UploadedFile::fake()->image('pakta.png'),
+            'foto_buku_tabungan' => \Illuminate\Http\UploadedFile::fake()->image('tabungan.png'),
+            'foto_npwp' => \Illuminate\Http\UploadedFile::fake()->image('npwp.png'),
+        ]);
+
+        $response->assertRedirect(route('dashboard'));
+        $agent->refresh();
+        $this->assertTrue((bool) $agent->is_submitted);
+        $this->assertNull($agent->rejection_reason);
     }
 }

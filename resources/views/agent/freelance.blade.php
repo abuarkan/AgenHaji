@@ -33,6 +33,97 @@
 @endsection
 
 @section('content')
+    @if(!empty($agent->rejection_reason) && !$agent->is_ktp_verified)
+        <div class="mb-6 p-5 rounded-2xl bg-red-50 border-2 border-red-200 text-red-900 shadow-md animate-fade-in">
+            <div class="flex items-start gap-4">
+                <div class="w-10 h-10 rounded-xl bg-red-100 border border-red-200 text-red-650 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 text-red-650" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-extrabold text-sm text-red-900 uppercase tracking-wide">Pendaftaran Perlu Diperbaiki (Catatan Admin BPKH)</h4>
+                        <span class="px-2.5 py-0.5 rounded-full bg-red-100 text-red-700 font-bold text-[10px] uppercase">Perlu Perbaikan</span>
+                    </div>
+                    <p class="text-xs text-red-800 font-medium mt-1">Catatan Admin: <strong class="text-red-950 font-bold">"{{ $agent->rejection_reason }}"</strong></p>
+                    <p class="text-[11px] text-red-700 mt-2">Mohon perbarui berkas/dokumen Anda sesuai catatan admin di atas, lalu lakukan submit ulang.</p>
+                    <div class="mt-3">
+                        <a href="{{ route('agent.wizard') }}" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-black rounded-xl text-xs transition-all shadow-sm inline-flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
+                            <span>Perbaiki Berkas & Submit Ulang (Wizard)</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @elseif(!$agent->is_ktp_verified && $agent->is_submitted)
+        <div class="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 flex items-start gap-3 shadow-sm">
+            <svg class="w-5 h-5 text-amber-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+            <div>
+                <span class="block font-bold text-sm">Akun Menunggu Verifikasi</span>
+                <span class="block text-xs mt-0.5 text-amber-700/90">
+                    Pendaftaran berkas dan dokumen Anda sedang dalam proses verifikasi oleh administrator. Anda dapat menjelajahi statistik dashboard Anda, namun fitur pendaftaran calon jemaah baru ditutup sementara sampai akun Anda diaktifkan (Active).
+                </span>
+            </div>
+        </div>
+    @endif
+
+    @if($agent->is_ktp_verified)
+        <div class="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 flex items-start justify-between gap-3 shadow-sm relative animate-fade-in" id="verifSuccessBanner">
+            <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div>
+                    <span class="block font-bold text-sm">Akun Terverifikasi & Aktif</span>
+                    <span class="block text-xs mt-0.5 text-slate-600 font-medium">
+                        Selamat! Berkas dan dokumen Anda telah berhasil diverifikasi oleh Admin BPKH. Akun Anda kini aktif, dan Anda dapat mulai melakukan pendaftaran jemaah haji baru.
+                    </span>
+                </div>
+            </div>
+            <button onclick="document.getElementById('verifSuccessBanner').remove()" class="text-slate-400 hover:text-slate-700 cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+    @endif
+
+    <!-- Banner Status Program Referral & Periodisasi -->
+    @if(!empty($activeReferralProgram))
+        <div class="mb-6 p-4 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-600 text-white flex items-center justify-between shadow-md">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-extrabold text-sm">{{ $activeReferralProgram->name }}</span>
+                        <span class="px-2 py-0.5 rounded-full bg-white/30 text-white font-extrabold text-[9px] uppercase tracking-wider">Periode Aktif</span>
+                    </div>
+                    <p class="text-xs text-amber-100 mt-0.5">Program referral berjalan dari <strong>{{ $activeReferralProgram->start_date->format('d M Y') }}</strong> s.d. <strong>{{ $activeReferralProgram->end_date->format('d M Y') }}</strong>. Monetisasi komisi dan perolehan poin berlaku penuh.</p>
+                </div>
+            </div>
+        </div>
+    @else
+        <div class="mb-6 p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 flex items-center gap-3 shadow-xs">
+            <svg class="w-5 h-5 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+            <div class="text-xs">
+                <span class="font-bold block text-amber-900">Program Referral Tidak Aktif / Di Luar Periode Monetisasi</span>
+                <span>Saat ini tidak ada periode program referral yang berjalan. Pendaftaran jemaah tetap tercatat, namun monetisasi komisi referral sedang ditangguhkan sampai periode baru dibuka.</span>
+            </div>
+        </div>
+    @endif
+
     <!-- Tab 1: Beranda / Dashboard Stats & Charts -->
     <div id="tab-dashboard" class="tab-panel">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -53,6 +144,20 @@
                         <span class="inline-block px-2.5 py-1 rounded bg-bpkh-gold/10 text-bpkh-gold font-bold text-[10px] border border-bpkh-gold/20 uppercase">
                             Khusus: {{ \App\Models\ProspectJemaah::where('registration_type', 'Khusus')->count() }}
                         </span>
+                    </div>
+                </div>
+
+                <!-- Agent Points Card -->
+                <div class="bg-gradient-to-br from-amber-500 to-yellow-600 text-white rounded-2xl p-6 shadow-md relative overflow-hidden">
+                    <div class="flex items-center justify-between relative z-10">
+                        <div>
+                            <span class="block text-[10px] font-extrabold uppercase tracking-wider text-amber-100">Total Poin Gamifikasi</span>
+                            <span class="block text-4xl font-black mt-1">{{ number_format($agentPoints) }} <span class="text-base font-bold">Poin</span></span>
+                            <span class="block text-[10px] text-amber-100 font-medium mt-1">Dikumpulkan dari referal & porsi haji</span>
+                        </div>
+                        <button onclick="openPointLedgerModal()" class="px-3 py-2 bg-white/20 hover:bg-white/30 text-white rounded-xl text-xs font-bold transition-all backdrop-blur-xs border border-white/20 cursor-pointer">
+                            Riwayat Poin
+                        </button>
                     </div>
                 </div>
 
@@ -135,62 +240,6 @@
 
             <!-- Center Column: BPS BPIH Leaderboard & Charts -->
             <div class="lg:col-span-2 space-y-6">
-                <!-- BPS BPIH Podiums and Leaderboard -->
-                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                    <h3 class="text-sm font-extrabold text-slate-800 uppercase tracking-wide mb-6">Peringkat BPS BPIH Terpopuler (Nasional)</h3>
-
-                    <!-- Podium Layout -->
-                    <div class="flex items-end justify-center gap-4 mb-8 pt-4">
-                        <!-- Rank 2 -->
-                        <div class="flex flex-col items-center w-24">
-                            <div class="w-10 h-10 rounded-full bg-slate-100 border-2 border-slate-200 flex items-center justify-center text-xs font-bold text-slate-700">2</div>
-                            <span class="text-[10px] font-bold text-slate-600 mt-2 truncate w-full text-center">Bank Muamalat</span>
-                            <div class="w-full h-16 bg-slate-200 rounded-t-lg flex items-center justify-center font-bold text-slate-700 text-xs mt-2 shadow-sm">209.891</div>
-                        </div>
-
-                        <!-- Rank 1 -->
-                        <div class="flex flex-col items-center w-28">
-                            <div class="w-12 h-12 rounded-full bg-amber-50 border-2 border-bpkh-gold flex items-center justify-center text-sm font-black text-slate-800 ring-4 ring-bpkh-gold/10">1</div>
-                            <span class="text-[10px] font-extrabold text-slate-800 mt-2 truncate w-full text-center">BSI</span>
-                            <div class="w-full h-24 bg-bpkh-navy text-white rounded-t-lg flex items-center justify-center font-extrabold text-xs mt-2 shadow-md">3.417.704</div>
-                        </div>
-
-                        <!-- Rank 3 -->
-                        <div class="flex flex-col items-center w-24">
-                            <div class="w-10 h-10 rounded-full bg-slate-100 border-2 border-slate-200 flex items-center justify-center text-xs font-bold text-slate-700">3</div>
-                            <span class="text-[10px] font-bold text-slate-600 mt-2 truncate w-full text-center">BCA Syariah</span>
-                            <div class="w-full h-12 bg-slate-200 rounded-t-lg flex items-center justify-center font-bold text-slate-700 text-xs mt-2 shadow-sm">107.865</div>
-                        </div>
-                    </div>
-
-                    <!-- Peringkat List -->
-                    <div class="space-y-3.5 border-t border-slate-100 pt-6">
-                        @php
-                            $nationalBanks = [
-                                ['name' => 'Bank Syariah Indonesia', 'count' => '3.417.704', 'percent' => 90],
-                                ['name' => 'Bank Muamalat', 'count' => '209.891', 'percent' => 15],
-                                ['name' => 'Bank BCA Syariah', 'count' => '107.865', 'percent' => 10],
-                                ['name' => 'Bank Maybank Syariah', 'count' => '98.082', 'percent' => 8],
-                                ['name' => 'Bank Mega Syariah', 'count' => '54.934', 'percent' => 5],
-                            ];
-                        @endphp
-
-                        @foreach($nationalBanks as $idx => $b)
-                            <div class="flex items-center gap-4">
-                                <span class="w-4 text-xs font-bold text-slate-400 text-right">{{ $idx + 1 }}</span>
-                                <div class="flex-1">
-                                    <div class="flex justify-between text-[11px] font-bold text-slate-700 mb-1">
-                                        <span>{{ $b['name'] }}</span>
-                                        <span class="font-mono text-slate-500">{{ $b['count'] }} jemaah</span>
-                                    </div>
-                                    <div class="w-full h-2 bg-slate-150 rounded overflow-hidden">
-                                        <div class="h-full bg-bpkh-navy rounded" style="width: {{ $b['percent'] }}%;"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
 
                 <!-- Charts Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -242,7 +291,321 @@
                             @endforeach
                         </div>
                     </div>
+        <!-- Widget Program Insentif BPKH Apps (#SemuaBisaHaji) -->
+        <div class="mt-8 bg-white border border-slate-200 rounded-3xl p-6 shadow-xs space-y-6">
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-sm font-extrabold text-slate-800 uppercase tracking-wide">Program Insentif Referral (#SemuaBisaHaji)</h3>
+                            <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-black text-[9px] uppercase tracking-wider">BPKH Apps</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 font-medium">Insentif berbasis skema progresif perolehan porsi haji (Data Nominatif SISKEHAT)</p>
+                    </div>
                 </div>
+
+                <!-- Filter Month & Year -->
+                <form method="GET" class="flex items-center gap-2">
+                    <select name="month" onchange="this.form.submit()" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-700 outline-none">
+                        @foreach(range(1, 12) as $m)
+                            <option value="{{ $m }}" {{ $monthlyIncentive['month'] == $m ? 'selected' : '' }}>
+                                {{ Carbon\Carbon::createFromDate(null, $m, 1)->translatedFormat('F') }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <select name="year" onchange="this.form.submit()" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-700 outline-none">
+                        @foreach([2025, 2026, 2027] as $y)
+                            <option value="{{ $y }}" {{ $monthlyIncentive['year'] == $y ? 'selected' : '' }}>{{ $y }}</option>
+                        @endforeach
+                    </select>
+                </form>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Left: Card Total Perolehan Insentif -->
+                <div class="lg:col-span-1 bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 text-white rounded-2xl p-6 shadow-md flex flex-col justify-between space-y-6">
+                    <div>
+                        <span class="inline-block px-2.5 py-1 rounded-full bg-white/20 text-white text-[9px] font-extrabold uppercase tracking-wider mb-3">Estimasi Insentif {{ $monthlyIncentive['period_label'] }}</span>
+                        <span class="block text-[10px] font-bold text-emerald-100 uppercase tracking-wider">TOTAL PEROLEHAN INSENTIF</span>
+                        <span class="block text-3xl font-black mt-1">Rp {{ number_format($monthlyIncentive['total_incentive_amount'], 0, ',', '.') }}</span>
+                    </div>
+
+                    <div class="space-y-2 pt-4 border-t border-white/20 text-xs text-emerald-100">
+                        <div class="flex items-center gap-2">
+                            <span>📱 Total Porsi BPKH Apps:</span>
+                            <strong class="text-white font-extrabold">{{ $monthlyIncentive['bpkh_apps']['count'] }} Porsi</strong>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span>🌐 Total Porsi Non-BPKH:</span>
+                            <strong class="text-white font-extrabold">{{ $monthlyIncentive['non_bpkh_apps']['count'] }} Porsi</strong>
+                        </div>
+                        <div class="flex items-center gap-2 pt-2 text-[10px] text-emerald-200 font-medium">
+                            <span>💳 Pencairan maks. 14 hari kerja ke rekening M-Pocket BPKH Apps.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Breakdown Table per Tiering -->
+                <div class="lg:col-span-2 space-y-4">
+                    <h4 class="text-xs font-extrabold text-slate-700 uppercase tracking-wider">Simulasi Insentif Progresif (BPKH Apps)</h4>
+                    <div class="overflow-x-auto border border-slate-150 rounded-2xl">
+                        <table class="w-full text-xs text-left text-slate-600">
+                            <thead class="text-[9px] uppercase bg-slate-50 text-slate-500 border-b border-slate-200 font-bold tracking-wider">
+                                <tr>
+                                    <th class="px-4 py-3">Level Tier</th>
+                                    <th class="px-4 py-3 text-center">Porsi Berhasil</th>
+                                    <th class="px-4 py-3 text-right">Insentif / Porsi</th>
+                                    <th class="px-4 py-3 text-center">Jumlah Porsi</th>
+                                    <th class="px-4 py-3 text-right">Subtotal Insentif</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 font-medium">
+                                @php
+                                    $b = $monthlyIncentive['bpkh_apps']['breakdown'];
+                                @endphp
+                                <tr>
+                                    <td class="px-4 py-3 font-bold text-slate-800 flex items-center gap-2">
+                                        <span>🥈 Silver</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-center text-slate-500">1 - 20</td>
+                                    <td class="px-4 py-3 text-right text-slate-700 font-bold">Rp {{ number_format($b['silver']['rate'], 0, ',', '.') }}</td>
+                                    <td class="px-4 py-3 text-center font-bold text-emerald-700">{{ $b['silver']['count'] }}</td>
+                                    <td class="px-4 py-3 text-right font-extrabold text-slate-900">Rp {{ number_format($b['silver']['amount'], 0, ',', '.') }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 font-bold text-slate-800 flex items-center gap-2">
+                                        <span>🥇 Gold</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-center text-slate-500">21 - 35</td>
+                                    <td class="px-4 py-3 text-right text-slate-700 font-bold">Rp {{ number_format($b['gold']['rate'], 0, ',', '.') }}</td>
+                                    <td class="px-4 py-3 text-center font-bold text-emerald-700">{{ $b['gold']['count'] }}</td>
+                                    <td class="px-4 py-3 text-right font-extrabold text-slate-900">Rp {{ number_format($b['gold']['amount'], 0, ',', '.') }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 font-bold text-slate-800 flex items-center gap-2">
+                                        <span>🔷 Platinum</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-center text-slate-500">36 - 50</td>
+                                    <td class="px-4 py-3 text-right text-slate-700 font-bold">Rp {{ number_format($b['platinum']['rate'], 0, ',', '.') }}</td>
+                                    <td class="px-4 py-3 text-center font-bold text-emerald-700">{{ $b['platinum']['count'] }}</td>
+                                    <td class="px-4 py-3 text-right font-extrabold text-slate-900">Rp {{ number_format($b['platinum']['amount'], 0, ',', '.') }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 font-bold text-slate-800 flex items-center gap-2">
+                                        <span>💎 Diamond</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-center text-slate-500">> 50</td>
+                                    <td class="px-4 py-3 text-right text-slate-700 font-bold">Rp {{ number_format($b['diamond']['rate'], 0, ',', '.') }}</td>
+                                    <td class="px-4 py-3 text-center font-bold text-emerald-700">{{ $b['diamond']['count'] }}</td>
+                                    <td class="px-4 py-3 text-right font-extrabold text-slate-900">Rp {{ number_format($b['diamond']['amount'], 0, ',', '.') }}</td>
+                            <td class="px-4 py-3 text-right font-extrabold text-slate-900">Rp {{ number_format($b['diamond']['amount'], 0, ',', '.') }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Program Insentif Referral -->
+        <div class="mt-8 bg-white border border-slate-200 rounded-3xl p-6 shadow-xs space-y-6">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-extrabold text-slate-800 uppercase tracking-wide">Kinerja Program Insentif Referral</h3>
+                        <p class="text-[11px] text-slate-500 font-medium">Informasi & pencapaian referal jemaah Anda berdasarkan periode program</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                @forelse($referralProgramsData as $program)
+                    @php
+                        $isActive = $program->start_date->lte(now()) && $program->end_date->gte(now()) && $program->is_active;
+                    @endphp
+                    <div class="border rounded-2xl p-4 {{ $isActive ? 'bg-emerald-50/30 border-emerald-200' : 'bg-slate-50/50 border-slate-200' }}">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <h4 class="font-extrabold text-xs text-slate-800">{{ $program->name }}</h4>
+                                <span class="text-[10px] text-slate-400 font-bold uppercase">{{ $program->start_date->format('d M Y') }} - {{ $program->end_date->format('d M Y') }}</span>
+                            </div>
+                            <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider {{ $isActive ? 'bg-emerald-100 text-emerald-800 border border-emerald-250' : 'bg-slate-250 text-slate-600 border border-slate-300' }}">
+                                {{ $isActive ? 'Sedang Berjalan' : 'Sudah Selesai' }}
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-slate-100 pt-3 mt-3">
+                            <span class="text-[10px] font-bold text-slate-500 uppercase">Pendaftaran Anda:</span>
+                            <span class="text-xs font-black text-emerald-600">{{ $program->agent_prospects_count }} Jemaah</span>
+                        </div>
+                    </div>
+                @empty
+                    <div class="col-span-2 text-center text-slate-400 italic text-xs py-4">Belum ada program referral terdaftar.</div>
+                @endforelse
+            </div>
+        </div>
+
+        <!-- Section Racing Contest Tenaga Pemasaran (Reward Umrah) -->
+        <div class="mt-8 bg-white border border-slate-200 rounded-3xl p-6 shadow-xs space-y-6">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-extrabold text-slate-800 uppercase tracking-wide">Program Racing Contest Tenaga Pemasaran</h3>
+                        <p class="text-[11px] text-slate-500 font-medium">Apresiasi Reward Umrah BPKH untuk Tenaga Pemasaran & Agen Haji Terbaik</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                @forelse($racingProgramsData as $program)
+                    @php
+                        $isActive = $program->start_date->lte(now()) && $program->end_date->gte(now()) && $program->is_active;
+                        $userPortion = $program->agent_rank['portion_count'] ?? 0;
+                        $minTarget = max(1, $program->min_portion_target ?? 100);
+                        $targetPct = min(100, round(($userPortion / $minTarget) * 100));
+                        $isWinner = $program->agent_rank['is_umrah_winner'] ?? false;
+                        $isQual = $program->agent_rank['is_qualified'] ?? false;
+                    @endphp
+
+                    <div class="border rounded-3xl p-6 {{ $isActive ? 'bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 text-white border-purple-800' : 'bg-slate-50 border-slate-200 text-slate-800' }} shadow-md space-y-6">
+                        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border-b {{ $isActive ? 'border-white/10' : 'border-slate-200' }} pb-6">
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-2 flex-wrap text-slate-800">
+                                    <span class="inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider {{ $isActive ? 'bg-amber-400 text-slate-950' : 'bg-slate-200 text-slate-700' }}">
+                                        🕋 HADIAH APRESIASI: {{ strtoupper($program->reward_type ?? 'Paket Umrah Gratis') }}
+                                    </span>
+                                    <span class="inline-block px-2.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider {{ $isActive ? 'bg-purple-500 text-white' : 'bg-slate-350 text-slate-700' }}">
+                                        {{ $isActive ? 'Sedang Berjalan' : 'Sudah Selesai' }}
+                                    </span>
+                                </div>
+                                <h4 class="text-base font-black {{ $isActive ? 'text-white' : 'text-slate-800' }}">{{ $program->title }}</h4>
+                                <p class="text-xs {{ $isActive ? 'text-purple-200' : 'text-slate-500' }} max-w-xl">
+                                    Hadiah diberikan kepada <strong>{{ $program->winner_quota ?? 6 }} Tenaga Pemasar Terbaik</strong> yang mengumpulkan porsi terbanyak setelah melampaui threshold minimal <strong>{{ $program->min_portion_target ?? 100 }} Porsi</strong>.
+                                </p>
+                            </div>
+
+                            <!-- Timeline Pill -->
+                            <div class="{{ $isActive ? 'bg-white/10 border-white/20 text-purple-100' : 'bg-white border-slate-200 text-slate-600' }} border p-4 rounded-2xl text-xs space-y-1 shrink-0">
+                                <div class="flex items-center gap-2">
+                                    <span>📅 Periode Akumulasi:</span>
+                                    <strong class="{{ $isActive ? 'text-white' : 'text-slate-850' }} font-extrabold">{{ $program->start_date->format('M') }} – {{ $program->end_date->format('M Y') }}</strong>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span>📣 Pengumuman:</span>
+                                    <strong class="text-amber-500 font-extrabold">{{ $program->announcement_date ? $program->announcement_date->format('d M Y') : 'November 2026' }}</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Current Agent Rank & Threshold Progress -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                            <div class="md:col-span-2 space-y-2">
+                                <div class="flex items-center justify-between text-xs font-bold">
+                                    <span class="{{ $isActive ? 'text-purple-200' : 'text-slate-500' }}">Progress Threshold Minimal ({{ $minTarget }} Porsi)</span>
+                                    <span class="{{ $isQual ? 'text-emerald-500 font-black' : 'text-amber-500' }}">{{ $userPortion }} / {{ $minTarget }} Porsi ({{ $targetPct }}%)</span>
+                                </div>
+                                <div class="w-full h-3 {{ $isActive ? 'bg-white/20' : 'bg-slate-200' }} rounded-full overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-amber-400 to-yellow-300 rounded-full transition-all" style="width: {{ $targetPct }}%;"></div>
+                                </div>
+                                <p class="text-[10px] {{ $isActive ? 'text-purple-200' : 'text-slate-500' }} mt-1">
+                                    @if($isWinner)
+                                        🎉 <strong class="text-amber-500">SELAMAT! Anda saat ini berada dalam posisi Top {{ $program->winner_quota ?? 6 }} Calon Penerima Reward Umrah!</strong>
+                                    @elseif($isQual)
+                                        ✅ Anda telah melampaui Threshold Minimal {{ $minTarget }} Porsi! Tingkatkan terus perolehan porsi Anda untuk masuk ke pemenang teratas.
+                                    @else
+                                        💡 Anda memerlukan {{ $program->agent_rank['needed_to_threshold'] ?? $minTarget }} porsi lagi untuk melampaui threshold {{ $minTarget }} porsi dan berhak dikualifikasikan sebagai calon pemenang Umrah.
+                                    @endif
+                                </p>
+                            </div>
+
+                            <div class="{{ $isActive ? 'bg-white/10 border-white/10' : 'bg-white border-slate-200' }} border p-4 rounded-2xl text-center">
+                                <span class="block text-[10px] font-bold {{ $isActive ? 'text-purple-200' : 'text-slate-400' }} uppercase tracking-wider">Peringkat Anda</span>
+                                <span class="block text-3xl font-black text-amber-500 mt-1">#{{ $program->agent_rank['rank'] ?? '-' }}</span>
+                                <span class="block text-[10px] {{ $isActive ? 'text-purple-200' : 'text-slate-500' }} font-semibold mt-1">Dari seluruh Tenaga Pemasar se-Indonesia</span>
+                            </div>
+                        </div>
+
+                        <!-- Leaderboard Table Top 10 for this program -->
+                        <div class="space-y-3 pt-4 border-t {{ $isActive ? 'border-white/10' : 'border-slate-200' }}">
+                            <h4 class="text-xs font-extrabold {{ $isActive ? 'text-white' : 'text-slate-800' }} uppercase tracking-wider">Klasemen Racing Contest Real-time</h4>
+                            <div class="overflow-x-auto border {{ $isActive ? 'border-white/10' : 'border-slate-200 bg-white' }} rounded-2xl">
+                                <table class="w-full text-xs text-left {{ $isActive ? 'text-slate-300' : 'text-slate-600' }}">
+                                    <thead class="text-[9px] uppercase {{ $isActive ? 'bg-white/5 text-slate-350' : 'bg-slate-50 text-slate-500' }} border-b {{ $isActive ? 'border-white/10' : 'border-slate-200' }} font-bold tracking-wider">
+                                        <tr>
+                                            <th class="px-4 py-3 text-center">Rank</th>
+                                            <th class="px-4 py-3">Nama Agen / Tenaga Pemasar</th>
+                                            <th class="px-4 py-3">Level Agen</th>
+                                            <th class="px-4 py-3 text-center">Total Porsi</th>
+                                            <th class="px-4 py-3 text-center">Threshold (>=100)</th>
+                                            <th class="px-4 py-3 text-center">Status Apresiasi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y {{ $isActive ? 'divide-white/5' : 'divide-slate-100' }}">
+                                        @forelse($program->leaderboard_data as $row)
+                                            <tr class="hover:bg-slate-550/10 transition-colors {{ $row['agent_id'] === $agent->id ? ($isActive ? 'bg-white/10 font-bold text-white' : 'bg-purple-50 font-bold text-purple-950') : '' }}">
+                                                <td class="px-4 py-3 text-center">
+                                                    @if($row['rank'] <= 3)
+                                                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-purple-600 text-white font-black text-xs shadow-xs">#{{ $row['rank'] }}</span>
+                                                    @else
+                                                        <span class="font-bold text-slate-400">#{{ $row['rank'] }}</span>
+                                                    @endif
+                                                </td>
+                                                <td class="px-4 py-3 font-bold {{ $isActive ? 'text-white' : 'text-slate-800' }}">
+                                                    {{ $row['name'] }}
+                                                    @if($row['agent_id'] === $agent->id)
+                                                        <span class="ml-1 text-[9px] px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 uppercase font-extrabold">(Anda)</span>
+                                                    @endif
+                                                </td>
+                                                <td class="px-4 py-3 font-medium">{{ $row['level'] }}</td>
+                                                <td class="px-4 py-3 text-center font-black text-purple-600 text-sm">{{ $row['portion_count'] }} Porsi</td>
+                                                <td class="px-4 py-3 text-center">
+                                                    @if($row['is_qualified'])
+                                                        <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-150 text-[9px] font-bold uppercase">Lolos Threshold</span>
+                                                    @else
+                                                        <span class="px-2 py-0.5 rounded bg-slate-150 text-slate-500 text-[9px] font-bold uppercase">Kurang {{ $row['needed_to_threshold'] }} Porsi</span>
+                                                    @endif
+                                                </td>
+                                                <td class="px-4 py-3 text-center">
+                                                    @if(!empty($row['is_umrah_winner']))
+                                                        <span class="px-2 py-0.5 rounded bg-amber-450 text-slate-900 font-black text-[9px] uppercase shadow-xs flex items-center justify-center gap-1">
+                                                            <span>🕋</span> <span>Pemenang Umrah</span>
+                                                        </span>
+                                                    @elseif($row['is_qualified'])
+                                                        <span class="px-2 py-0.5 rounded bg-purple-100 text-purple-800 text-[9px] font-bold uppercase">Kandidat Cadangan</span>
+                                                    @else
+                                                        <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-400 text-[9px] font-bold uppercase">Dalam Progres</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="6" class="px-4 py-8 text-center text-slate-450">Belum ada agen yang mendaftarkan porsi haji pada periode racing ini.</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-6 text-center text-slate-400 italic text-xs bg-slate-50 rounded-2xl border border-slate-150">
+                        Belum ada program racing contest terdaftar.
+                    </div>
+                @endforelse
             </div>
         </div>
     </div>
@@ -254,14 +617,25 @@
             <div class="flex flex-col md:flex-row items-center justify-between gap-4 border-b border-slate-100 pb-5 mb-5">
                 <h3 class="text-sm font-extrabold text-slate-800 uppercase tracking-wide">Kelola Jemaah Haji</h3>
                 <div class="flex gap-2 w-full md:w-auto">
-                    <button onclick="openImportModal()" class="px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-700 font-bold rounded-lg text-xs cursor-pointer shadow-sm transition-all flex items-center gap-1.5 border border-slate-200">
-                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                        <span>Import Excel (CSV)</span>
-                    </button>
-                    <button onclick="toggleModal(true)" class="px-4 py-2.5 bg-bpkh-gold hover:bg-bpkh-gold-hover text-slate-950 font-bold rounded-lg text-xs cursor-pointer shadow-sm transition-all flex items-center gap-1.5 border border-bpkh-gold">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
-                        <span>Daftarkan Jemaah Baru</span>
-                    </button>
+                    @if(!$agent->is_ktp_verified)
+                        <button disabled title="Fitur dinonaktifkan hingga akun Anda terverifikasi oleh Admin" class="px-4 py-2.5 bg-slate-100 text-slate-400 font-bold rounded-lg text-xs cursor-not-allowed shadow-sm border border-slate-200 flex items-center gap-1.5 opacity-60">
+                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                            <span>Import Excel (CSV)</span>
+                        </button>
+                        <button disabled title="Fitur dinonaktifkan hingga akun Anda terverifikasi oleh Admin" class="px-4 py-2.5 bg-slate-100 text-slate-400 font-bold rounded-lg text-xs cursor-not-allowed shadow-sm border border-slate-200 flex items-center gap-1.5 opacity-60">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                            <span>Daftarkan Jemaah Baru</span>
+                        </button>
+                    @else
+                        <button onclick="openImportModal()" class="px-4 py-2.5 bg-white hover:bg-slate-50 text-slate-700 font-bold rounded-lg text-xs cursor-pointer shadow-sm transition-all flex items-center gap-1.5 border border-slate-200">
+                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                            <span>Import Excel (CSV)</span>
+                        </button>
+                        <button onclick="toggleModal(true)" class="px-4 py-2.5 bg-bpkh-gold hover:bg-bpkh-gold-hover text-slate-950 font-bold rounded-lg text-xs cursor-pointer shadow-sm transition-all flex items-center gap-1.5 border border-bpkh-gold">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                            <span>Daftarkan Jemaah Baru</span>
+                        </button>
+                    @endif
                 </div>
             </div>
 
@@ -1227,6 +1601,48 @@
             submitBtn.disabled = true;
             submitBtn.className = "w-full py-2.5 px-4 bg-slate-100 text-slate-400 font-bold rounded-lg text-xs transition-all cursor-not-allowed border border-slate-200";
             submitBtn.innerText = "Selesaikan Pendaftaran (Verifikasi NIK Dahulu)";
+        }
+    <!-- MODAL RIWAYAT POIN -->
+    <div id="modal-point-ledger" class="fixed inset-0 z-50 overflow-y-auto hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="fixed inset-0 bg-slate-900/60 transition-opacity" onclick="closePointLedgerModal()"></div>
+            <div class="relative bg-white rounded-3xl shadow-xl max-w-lg w-full overflow-hidden border border-slate-200 z-10 transition-all p-6 space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <h3 class="text-sm font-extrabold text-slate-800 uppercase tracking-wide">Riwayat Poin Gamifikasi</h3>
+                    <button onclick="closePointLedgerModal()" class="text-slate-400 hover:text-slate-650 cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="space-y-2 max-h-[300px] overflow-y-auto">
+                    @forelse($pointLedgers as $pl)
+                        <div class="p-3 bg-slate-50 border border-slate-150 rounded-2xl flex items-center justify-between text-xs">
+                            <div>
+                                <span class="font-bold text-slate-800 block">{{ $pl->description }}</span>
+                                <span class="text-[10px] text-slate-400">{{ $pl->created_at->format('d M Y H:i') }}</span>
+                            </div>
+                            <span class="font-black text-amber-600 text-sm">+{{ $pl->points }} Poin</span>
+                        </div>
+                    @empty
+                        <div class="text-xs text-slate-400 text-center py-6">Belum ada riwayat perolehan poin.</div>
+                    @endforelse
+                </div>
+
+                <div class="pt-3 border-t border-slate-100 flex justify-end">
+                    <button type="button" onclick="closePointLedgerModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs cursor-pointer transition-all">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openPointLedgerModal() {
+            document.getElementById('modal-point-ledger').classList.remove('hidden');
+        }
+        function closePointLedgerModal() {
+            document.getElementById('modal-point-ledger').classList.add('hidden');
         }
     </script>
 @endsection

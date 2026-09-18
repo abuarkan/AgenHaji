@@ -16,11 +16,13 @@ class AgentLevelingService
 {
     protected $agentRepo;
     protected $prospectRepo;
+    protected $gamificationService;
 
-    public function __construct(AgentRepository $agentRepo, ProspectRepository $prospectRepo)
+    public function __construct(AgentRepository $agentRepo, ProspectRepository $prospectRepo, GamificationService $gamificationService)
     {
         $this->agentRepo = $agentRepo;
         $this->prospectRepo = $prospectRepo;
+        $this->gamificationService = $gamificationService;
     }
 
     /**
@@ -115,6 +117,19 @@ class AgentLevelingService
     public function creditCommissionForProspect(ProspectJemaah $prospect): ?CommissionLedger
     {
         if (!in_array($prospect->status_pendaftaran, ['Verified', 'Pendaftar Haji'])) {
+            return null;
+        }
+
+        // Award Gamification Points for verified prospect
+        $this->gamificationService->awardPointsForProspect($prospect, 'verified');
+
+        if (!empty($prospect->porsi_number)) {
+            $this->gamificationService->awardPointsForProspect($prospect, 'portion');
+        }
+
+        // Check if referral program is active and monetizable for current date
+        if (!$this->gamificationService->isReferralMonetizable()) {
+            Log::info("COMMISSION SKIPPED: Referral program is not active / outside period for prospect ID {$prospect->id}");
             return null;
         }
 

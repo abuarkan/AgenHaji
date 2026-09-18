@@ -242,7 +242,7 @@ class AgentController extends Controller
             ->where('user_id', Auth::id())
             ->first();
 
-        if (!$agent->is_ktp_verified) {
+        if (!$agent->is_ktp_verified && !$agent->is_submitted) {
             return redirect()->route('agent.verification.wizard');
         }
 
@@ -303,6 +303,38 @@ class AgentController extends Controller
                 ->count();
         }
 
+        // Gamification & Incentive Data
+        $gamificationService = app(\App\Services\GamificationService::class);
+        $activeReferralProgram = $gamificationService->getActiveReferralProgram();
+        $agentPoints = $gamificationService->getAgentTotalPoints($agent->id);
+        $pointLedgers = \App\Models\AgentPointLedger::where('agent_id', $agent->id)->orderBy('created_at', 'desc')->take(20)->get();
+        $racingLeaderboard = $gamificationService->getRacingLeaderboard(null, $agent);
+
+        $incentiveService = app(\App\Services\IncentiveService::class);
+        $selectedMonth = intval(request('month', date('n')));
+        $selectedYear = intval(request('year', date('Y')));
+        $monthlyIncentive = $incentiveService->calculateMonthlyAgentIncentive($agent->id, $selectedMonth, $selectedYear);
+
+        // Fetch all referral and racing programs with agent performance
+        $referralPrograms = \App\Models\ReferralProgram::orderBy('start_date', 'desc')->get();
+        $referralProgramsData = $referralPrograms->map(function ($program) use ($agent) {
+            $prospectsCount = ProspectJemaah::withoutGlobalScopes()
+                ->where('agent_id', $agent->id)
+                ->whereDate('created_at', '>=', $program->start_date)
+                ->whereDate('created_at', '<=', $program->end_date)
+                ->count();
+            $program->agent_prospects_count = $prospectsCount;
+            return $program;
+        });
+
+        $racingPrograms = \App\Models\RacingProgram::orderBy('start_date', 'desc')->get();
+        $racingProgramsData = $racingPrograms->map(function ($program) use ($agent, $gamificationService) {
+            $leaderboardInfo = $gamificationService->getRacingLeaderboard($program, $agent);
+            $program->agent_rank = $leaderboardInfo['current_agent_rank'] ?? null;
+            $program->leaderboard_data = $leaderboardInfo['leaderboard'] ?? [];
+            return $program;
+        });
+
         $stats = [
             'sub_agents_count' => $subAgents->count(),
             'pending_agents_count' => $pendingAgents->count(),
@@ -311,10 +343,11 @@ class AgentController extends Controller
             'total_commission' => $credits,
             'balance' => $balance,
             'bank_stats' => $agentBankStats,
-            'province_stats' => $agentProvinceStats
+            'province_stats' => $agentProvinceStats,
+            'agent_points' => $agentPoints,
         ];
 
-        return view('agent.institution', compact('agent', 'subAgents', 'pendingAgents', 'prospects', 'ledgers', 'stats'));
+        return view('agent.institution', compact('agent', 'subAgents', 'pendingAgents', 'prospects', 'ledgers', 'stats', 'activeReferralProgram', 'agentPoints', 'pointLedgers', 'racingLeaderboard', 'monthlyIncentive', 'referralProgramsData', 'racingProgramsData'));
     }
 
     /**
@@ -387,7 +420,7 @@ class AgentController extends Controller
             ->where('user_id', Auth::id())
             ->first();
 
-        if (!$agent->is_ktp_verified) {
+        if (!$agent->is_ktp_verified && !$agent->is_submitted) {
             return redirect()->route('agent.verification.wizard');
         }
 
@@ -445,6 +478,38 @@ class AgentController extends Controller
                 ->count();
         }
 
+        // Gamification & Incentive Data
+        $gamificationService = app(\App\Services\GamificationService::class);
+        $activeReferralProgram = $gamificationService->getActiveReferralProgram();
+        $agentPoints = $gamificationService->getAgentTotalPoints($agent->id);
+        $pointLedgers = \App\Models\AgentPointLedger::where('agent_id', $agent->id)->orderBy('created_at', 'desc')->take(20)->get();
+        $racingLeaderboard = $gamificationService->getRacingLeaderboard(null, $agent);
+
+        $incentiveService = app(\App\Services\IncentiveService::class);
+        $selectedMonth = intval(request('month', date('n')));
+        $selectedYear = intval(request('year', date('Y')));
+        $monthlyIncentive = $incentiveService->calculateMonthlyAgentIncentive($agent->id, $selectedMonth, $selectedYear);
+
+        // Fetch all referral and racing programs with agent performance
+        $referralPrograms = \App\Models\ReferralProgram::orderBy('start_date', 'desc')->get();
+        $referralProgramsData = $referralPrograms->map(function ($program) use ($agent) {
+            $prospectsCount = ProspectJemaah::withoutGlobalScopes()
+                ->where('agent_id', $agent->id)
+                ->whereDate('created_at', '>=', $program->start_date)
+                ->whereDate('created_at', '<=', $program->end_date)
+                ->count();
+            $program->agent_prospects_count = $prospectsCount;
+            return $program;
+        });
+
+        $racingPrograms = \App\Models\RacingProgram::orderBy('start_date', 'desc')->get();
+        $racingProgramsData = $racingPrograms->map(function ($program) use ($agent, $gamificationService) {
+            $leaderboardInfo = $gamificationService->getRacingLeaderboard($program, $agent);
+            $program->agent_rank = $leaderboardInfo['current_agent_rank'] ?? null;
+            $program->leaderboard_data = $leaderboardInfo['leaderboard'] ?? [];
+            return $program;
+        });
+
         $stats = [
             'total_prospects' => $allProspects->count(),
             'verified_prospects' => $verifiedCount,
@@ -454,10 +519,11 @@ class AgentController extends Controller
             'next_level_target' => $nextLevelTarget,
             'progress_percent' => $progressPercent,
             'bank_stats' => $agentBankStats,
-            'province_stats' => $agentProvinceStats
+            'province_stats' => $agentProvinceStats,
+            'agent_points' => $agentPoints,
         ];
 
-        return view('agent.freelance', compact('agent', 'prospects', 'ledgers', 'stats'));
+        return view('agent.freelance', compact('agent', 'prospects', 'ledgers', 'stats', 'activeReferralProgram', 'agentPoints', 'pointLedgers', 'racingLeaderboard', 'monthlyIncentive', 'referralProgramsData', 'racingProgramsData'));
     }
 
     /**
@@ -544,13 +610,20 @@ class AgentController extends Controller
             $rules['nip'] = ['required', 'string', 'max:50'];
         }
 
-        $request->validate($rules);
-
         $uploadFields = ['foto_ktp', 'foto_bangunan', 'foto_diri', 'foto_pakta_integritas', 'foto_buku_tabungan', 'foto_npwp'];
         if ($isEmployee) {
             $uploadFields[] = 'bukti_pekerja';
             $uploadFields[] = 'sk_pengangkatan';
         }
+
+        foreach ($uploadFields as $field) {
+            $isImageOnly = in_array($field, ['foto_bangunan', 'foto_diri']);
+            $mimes = $isImageOnly ? 'jpeg,jpg,png,webp' : 'jpeg,jpg,png,webp,pdf';
+            $requiredRule = $agent->$field ? 'nullable' : 'required';
+            $rules[$field] = [$requiredRule, 'file', 'mimes:' . $mimes, 'max:3072'];
+        }
+
+        $request->validate($rules);
 
         $paths = [];
         foreach ($uploadFields as $field) {
@@ -569,7 +642,7 @@ class AgentController extends Controller
                 'full_name' => $request->nama_lengkap,
                 'jenis_kelamin' => $request->jenis_kelamin,
                 'tempat_lahir' => $request->tempat_lahir,
-                'tanggal_lahir' => $request->tanggal_lahir,
+                'birth_date' => $request->tanggal_lahir,
                 'alamat_ktp' => $request->alamat_ktp,
                 'provinsi_ktp' => $request->provinsi_ktp,
                 'kota_ktp' => $request->kota_ktp,
@@ -580,8 +653,34 @@ class AgentController extends Controller
                 'kota_tinggal' => $request->kota_tinggal,
                 'kecamatan_tinggal' => $request->kecamatan_tinggal,
                 'kelurahan_tinggal' => $request->kelurahan_tinggal,
-                'latitude_tinggal' => $request->latitude_tinggal ?? -6.200000,
-                'longitude_tinggal' => $request->longitude_tinggal ?? 106.816666,
+                'latitude_tinggal' => (function() use ($request) {
+                    $lat = -6.200000;
+                    $query = "{$request->alamat_tinggal}, {$request->kelurahan_tinggal}, {$request->kecamatan_tinggal}, {$request->kota_tinggal}, {$request->provinsi_tinggal}, Indonesia";
+                    $fallback = "{$request->kelurahan_tinggal}, {$request->kecamatan_tinggal}, {$request->kota_tinggal}, {$request->provinsi_tinggal}, Indonesia";
+                    $opts = ['http' => ['method' => 'GET', 'header' => "User-Agent: BPKHApp/1.0\r\nAccept: application/json\r\n"]];
+                    $context = stream_context_create($opts);
+                    $res = @file_get_contents("https://nominatim.openstreetmap.org/search?q=" . urlencode($query) . "&format=json&limit=1", false, $context);
+                    $data = $res ? json_decode($res, true) : null;
+                    if (empty($data)) {
+                        $res = @file_get_contents("https://nominatim.openstreetmap.org/search?q=" . urlencode($fallback) . "&format=json&limit=1", false, $context);
+                        $data = $res ? json_decode($res, true) : null;
+                    }
+                    return (!empty($data) && isset($data[0]['lat'])) ? (float)$data[0]['lat'] : (float)($request->latitude_tinggal ?? -6.200000);
+                })(),
+                'longitude_tinggal' => (function() use ($request) {
+                    $lng = 106.816666;
+                    $query = "{$request->alamat_tinggal}, {$request->kelurahan_tinggal}, {$request->kecamatan_tinggal}, {$request->kota_tinggal}, {$request->provinsi_tinggal}, Indonesia";
+                    $fallback = "{$request->kelurahan_tinggal}, {$request->kecamatan_tinggal}, {$request->kota_tinggal}, {$request->provinsi_tinggal}, Indonesia";
+                    $opts = ['http' => ['method' => 'GET', 'header' => "User-Agent: BPKHApp/1.0\r\nAccept: application/json\r\n"]];
+                    $context = stream_context_create($opts);
+                    $res = @file_get_contents("https://nominatim.openstreetmap.org/search?q=" . urlencode($query) . "&format=json&limit=1", false, $context);
+                    $data = $res ? json_decode($res, true) : null;
+                    if (empty($data)) {
+                        $res = @file_get_contents("https://nominatim.openstreetmap.org/search?q=" . urlencode($fallback) . "&format=json&limit=1", false, $context);
+                        $data = $res ? json_decode($res, true) : null;
+                    }
+                    return (!empty($data) && isset($data[0]['lon'])) ? (float)$data[0]['lon'] : (float)($request->longitude_tinggal ?? 106.816666);
+                })(),
                 'foto_ktp' => $paths['foto_ktp'],
                 'foto_bangunan' => $paths['foto_bangunan'],
                 'foto_diri' => $paths['foto_diri'],
@@ -593,6 +692,7 @@ class AgentController extends Controller
                 'foto_npwp' => $paths['foto_npwp'],
                 'nomor_npwp' => $request->nomor_npwp,
                 'is_submitted' => true,
+                'rejection_reason' => null,
             ];
 
             if ($isEmployee) {
@@ -618,7 +718,7 @@ class AgentController extends Controller
             ? 'Dokumen dan informasi berhasil dikirim! Silakan tunggu verifikasi oleh admin institusi Anda.'
             : 'Dokumen dan informasi berhasil dikirim! Silakan tunggu verifikasi oleh admin BPKH.';
 
-        return redirect()->route('agent.verification.wizard')->with('success', $msg);
+        return redirect()->route('dashboard')->with('success', $msg);
     }
 
     /**
