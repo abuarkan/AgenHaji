@@ -20,10 +20,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $forwardedHttps = ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
-        if (str_starts_with((string) config('app.url'), 'https://') || $forwardedHttps) {
-            URL::forceScheme('https');
-        }
+        $this->forcePublicRootUrl();
 
         // Dynamically override mail and google services config using database settings
         try {
@@ -56,5 +53,67 @@ class AppServiceProvider extends ServiceProvider
         } catch (\Exception $e) {
             // Silently ignore database errors during setup / early migrations
         }
+    }
+
+    /**
+     * Keep generated redirects/assets on the public domain, never an internal IP.
+     */
+    private function forcePublicRootUrl(): void
+    {
+        $appUrl = rtrim((string) config('app.url'), '/');
+        $appHost = $this->publicHostname(parse_url($appUrl, PHP_URL_HOST));
+        $requestHost = null;
+        $requestScheme = null;
+
+        if (! $this->app->runningInConsole()) {
+            $request = request();
+            $forwardedHost = $request->header('X-Forwarded-Host');
+            if (is_string($forwardedHost) && $forwardedHost !== '') {
+                $forwardedHost = trim(explode(',', $forwardedHost)[0]);
+            }
+
+            $requestHost = $this->publicHostname(
+                is_string($forwardedHost) && $forwardedHost !== ''
+                    ? $forwardedHost
+                    : $request->getHost()
+            );
+
+            $forwardedProto = $request->header('X-Forwarded-Proto');
+            if (is_string($forwardedProto) && $forwardedProto !== '') {
+                $requestScheme = strtolower(trim(explode(',', $forwardedProto)[0]));
+            } else {
+                $requestScheme = $request->getScheme();
+            }
+        }
+
+        $host = $requestHost ?? $appHost;
+        if (! $host) {
+            return;
+        }
+
+        $scheme = $requestScheme
+            ?: (str_starts_with($appUrl, 'https://') ? 'https' : 'http');
+
+        URL::forceRootUrl($scheme.'://'.$host);
+
+        if ($scheme === 'https' || str_starts_with($appUrl, 'https://')) {
+            URL::forceScheme('https');
+        }
+    }
+
+    private function publicHostname(mixed $host): ?string
+    {
+        $host = strtolower(trim((string) $host));
+        $host = explode(':', $host)[0];
+
+        if ($host === '' || $host === 'localhost' || str_ends_with($host, '.local')) {
+            return null;
+        }
+
+        if (filter_var($host, FILTER_VALIDATE_IP)) {
+            return null;
+        }
+
+        return $host;
     }
 }
