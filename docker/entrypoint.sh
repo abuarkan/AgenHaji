@@ -11,14 +11,14 @@ mkdir -p \
     bootstrap/cache \
     public/uploads
 
-echo "Waiting for MySQL at ${DB_HOST:-mysql}:3306..."
+echo "Waiting for MySQL at ${DB_HOST:-host.docker.internal}:${DB_PORT:-3306}..."
 i=0
 until php -r "
 try {
     new PDO(
-        sprintf('mysql:host=%s;port=%s;dbname=%s', getenv('DB_HOST') ?: 'mysql', getenv('DB_PORT') ?: '3306', getenv('DB_DATABASE') ?: 'bpkh_agen_haji'),
-        getenv('DB_USERNAME') ?: 'agenhaji',
-        getenv('DB_PASSWORD') ?: 'agenhaji'
+        sprintf('mysql:host=%s;port=%s;dbname=%s', getenv('DB_HOST') ?: 'host.docker.internal', getenv('DB_PORT') ?: '3306', getenv('DB_DATABASE') ?: 'bpkh_agen_haji'),
+        getenv('DB_USERNAME') ?: 'root',
+        getenv('DB_PASSWORD') ?: ''
     );
     exit(0);
 } catch (Throwable \$e) {
